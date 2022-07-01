@@ -1,0 +1,24 @@
+{
+  "name": "frontier",
+  "version": "1.0.0",
+  "description": "[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/paritytech/frontier/Rust)](https://github.com/paritytech/frontier/actions) [![Matrix](https://img.shields.io/matrix/frontier:matrix.org)](https://matrix.to/#/#frontier:matrix.org)",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "cargo test",
+    "build": "cargo build --release",
+    "dev:run": "./template/target/debug/frontier-template-node --dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/talhadaar/kories-frontier-src.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/talhadaar/kories-frontier-src/issues"
+  },
+  "homepage": "https://github.com/talhadaar/kories-frontier-src#readme"
+}
