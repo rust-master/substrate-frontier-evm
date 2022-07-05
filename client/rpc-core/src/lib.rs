@@ -24,7 +24,7 @@ mod net;
 mod web3;
 
 pub use self::{
-	eth::{EthApiServer, EthFilterApiServer},
+	eth::{EthApiServer, EthFilterApiServer, ExtendedEthApiServer},
 	eth_pubsub::EthPubSubApiServer,
 	net::NetApiServer,
 	web3::Web3ApiServer,

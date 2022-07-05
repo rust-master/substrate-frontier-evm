@@ -31,6 +31,7 @@ mod net;
 mod overrides;
 mod signer;
 mod web3;
+mod extended_eth;
 
 pub use self::{
 	eth::{Eth, EthBlockDataCacheTask, EthFilter, EthTask},
@@ -42,10 +43,12 @@ pub use self::{
 	},
 	signer::{EthDevSigner, EthSigner},
 	web3::Web3,
+	extended_eth::ExtendedEthApi,
 };
 pub use ethereum::TransactionV2 as EthereumTransaction;
 pub use fc_rpc_core::{
 	EthApiServer, EthFilterApiServer, EthPubSubApiServer, NetApiServer, Web3ApiServer,
+	ExtendedEthApiServer,
 };
 
 pub mod frontier_backend_client {

@@ -208,6 +208,11 @@ pub trait EthApi {
 	// Submit
 	// ########################################################################
 
+
+	//sign a message with address
+	#[method(name="eth_sign")]
+	fn sign(&self, addr: H160, message: &[u8]) -> Result<H256>;
+
 	/// Sends transaction; will block waiting for signer to return the
 	/// transaction hash.
 	#[method(name = "eth_sendTransaction")]
@@ -248,4 +253,19 @@ pub trait EthFilterApi {
 	/// Returns logs matching given filter object.
 	#[method(name = "eth_getLogs")]
 	async fn logs(&self, filter: Filter) -> Result<Vec<Log>>;
+}
+
+
+#[rpc(server)]
+pub trait ExtendedEthApi{
+
+	// #[method(name="eth_sign")]
+	// fn sign(&self) -> Result<String>;
+
+	// #[method(name="eth_signTransaction")]
+	// fn signTransaction(&self) -> Result<String>;
+
+	#[method(name="eth_getCompilers")]
+	fn compilers(&self) -> Result<Vec<String>>;
+	
 }

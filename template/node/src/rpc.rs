@@ -122,6 +122,7 @@ where
 	use fc_rpc::{
 		Eth, EthApiServer, EthDevSigner, EthFilter, EthFilterApiServer, EthPubSub,
 		EthPubSubApiServer, EthSigner, Net, NetApiServer, Web3, Web3ApiServer,
+		ExtendedEthApi, ExtendedEthApiServer,
 	};
 	use pallet_transaction_payment_rpc::{TransactionPaymentApiServer, TransactionPaymentRpc};
 	use substrate_frame_rpc_system::{SystemApiServer, SystemRpc};
@@ -198,6 +199,16 @@ where
 	)?;
 
 	io.merge(Web3::new(client.clone()).into_rpc())?;
+
+	io.merge(
+		ExtendedEthApi::new(
+			client.clone(),
+			network.clone(),
+			// Whether to format the `peer_count` response as Hex (default) or not.
+			true,
+		)
+		.into_rpc(),
+	)?;
 
 	io.merge(
 		EthPubSub::new(pool, client, network, subscription_task_executor, overrides).into_rpc(),

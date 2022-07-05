@@ -16,7 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-use ethereum_types::H256;
+use ethereum_types::{H256, H160};
 use futures::future::TryFutureExt;
 use jsonrpsee::core::RpcResult as Result;
 
@@ -32,6 +32,10 @@ use sp_runtime::{
 	traits::{BlakeTwo256, Block as BlockT},
 	transaction_validity::TransactionSource,
 };
+use sp_core::keccak_256;
+use std::str;
+
+
 
 use fc_rpc_core::types::*;
 use fp_rpc::{ConvertTransaction, ConvertTransactionRuntimeApi, EthereumRuntimeRPCApi};
@@ -50,6 +54,40 @@ where
 	CT: ConvertTransaction<<B as BlockT>::Extrinsic> + Send + Sync + 'static,
 	A: ChainApi<Block = B> + 'static,
 {
+
+
+	// implementation of this method is not complete yet
+
+	//////////////// todo ////////////
+	// need to sign signed_msg with address.
+
+	//////////////// refer ////////////
+	// https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_sign
+	// https://github.com/ethereum/go-ethereum/blob/cb7f35996d8f8dfd44172b72cbb08829a33db527/internal/ethapi/api.go#L1756
+	
+	pub fn sign(&self, _addr: H160, msg: &[u8]) -> Result<H256>{
+		// let msg_in_vec = msg.clone().into_vec();
+		// let str_msg = String::from_utf8(msg.into_vec()).expect("invalid value");
+
+		let str_msg = str::from_utf8(msg).expect("invalid value");
+
+		//if str_msg == invalid value then throw error 
+
+		let eth_msg = format!(
+            "{}{}{}",
+            "\x19Ethereum Signed Message:\n",
+            msg.len(),
+			str_msg
+        );
+
+		let bytes_msg = eth_msg.as_bytes();
+
+		let signed_msg = keccak_256(bytes_msg);
+
+		Ok(signed_msg.into())
+	}
+
+
 	pub async fn send_transaction(&self, request: TransactionRequest) -> Result<H256> {
 		let from = match request.from {
 			Some(from) => from,

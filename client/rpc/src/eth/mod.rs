@@ -301,6 +301,10 @@ where
 	// Submit
 	// ########################################################################
 
+ 	fn sign(&self, addr: H160, message: &[u8]) -> Result<H256>{
+		self.sign(addr, message)
+	}
+
 	async fn send_transaction(&self, request: TransactionRequest) -> Result<H256> {
 		self.send_transaction(request).await
 	}
