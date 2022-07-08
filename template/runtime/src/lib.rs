@@ -67,7 +67,7 @@ use frame_support::weights::{
 };
 use smallvec::smallvec;
 
-use sp_arithmetic::traits::{BaseArithmetic, SaturatedConversion, Saturating, Unsigned};
+use sp_arithmetic::traits::{BaseArithmetic, Unsigned};
 
 mod precompiles;
 use precompiles::FrontierPrecompiles;
@@ -317,7 +317,7 @@ parameter_types! {
 impl pallet_transaction_payment::Config for Runtime {
 	type OnChargeTransaction = CurrencyAdapter<Balances, ()>;
 	type OperationalFeeMultiplier = ConstU8<0>;
-	type WeightToFee = IdentityFee<Balance>;
+	type WeightToFee = ConstantFee<Balance>;
 	type LengthToFee = ConstantMultiplier<Balance, TransactionByteFee>;
 	type FeeMultiplierUpdate = ();
 }
@@ -389,7 +389,7 @@ impl pallet_dynamic_fee::Config for Runtime {
 }
 
 frame_support::parameter_types! {
-	pub IsActive: bool = true;
+	pub IsActive: bool = false;
 	pub DefaultBaseFeePerGas: U256 = U256::from(1_000_000_000);
 }
 
