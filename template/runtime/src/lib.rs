@@ -62,6 +62,13 @@ use pallet_transaction_payment::CurrencyAdapter;
 pub use sp_runtime::BuildStorage;
 pub use sp_runtime::{Perbill, Permill};
 
+use frame_support::weights::{
+	WeightToFeeCoefficient, WeightToFeeCoefficients, WeightToFeePolynomial,
+};
+use smallvec::smallvec;
+
+use sp_arithmetic::traits::{BaseArithmetic, SaturatedConversion, Saturating, Unsigned};
+
 mod precompiles;
 use precompiles::FrontierPrecompiles;
 
@@ -281,13 +288,35 @@ impl pallet_balances::Config for Runtime {
 	type WeightInfo = ();
 }
 
-parameter_types! {
-	pub const TransactionByteFee: Balance = 1;
+pub const FIXED_GAS_FEE: u32 = 25;
+pub struct ConstantFee<T>(sp_std::marker::PhantomData<T>);
+impl<T> WeightToFeePolynomial for ConstantFee<T>
+where
+	T: BaseArithmetic + From<u32> + Copy + Unsigned,
+{
+	type Balance = T;
+
+	fn polynomial() -> WeightToFeeCoefficients<Self::Balance> {
+		smallvec!(WeightToFeeCoefficient {
+			coeff_integer: FIXED_GAS_FEE.into(),
+			coeff_frac: Perbill::zero(),
+			negative: false,
+			degree: 0,
+		})
+	}
+
+	fn calc(weight: &Weight) -> Self::Balance {
+		FIXED_GAS_FEE.into()
+	}
 }
 
+parameter_types! {
+	pub const TransactionByteFee: Balance = 0;
+}
+// TODO non-evm transaction fees fixed at a base fee of 125,000,000, change this base fee
 impl pallet_transaction_payment::Config for Runtime {
 	type OnChargeTransaction = CurrencyAdapter<Balances, ()>;
-	type OperationalFeeMultiplier = ConstU8<5>;
+	type OperationalFeeMultiplier = ConstU8<0>;
 	type WeightToFee = IdentityFee<Balance>;
 	type LengthToFee = ConstantMultiplier<Balance, TransactionByteFee>;
 	type FeeMultiplierUpdate = ();
