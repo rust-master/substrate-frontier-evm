@@ -25,5 +25,6 @@ members = [
 	"primitives/self-contained",
 	"template/node",
 	"template/runtime",
+	"template/pallets/template"
 ]
 resolver = "2"
