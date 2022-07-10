@@ -288,25 +288,27 @@ impl pallet_balances::Config for Runtime {
 	type WeightInfo = ();
 }
 
-pub const FIXED_GAS_FEE: u32 = 25;
+/// Fixed at 9 decimals
+pub const FIXED_GAS_FEE_IN_KORIES: u64 = 2_500_000_000;
+
 pub struct ConstantFee<T>(sp_std::marker::PhantomData<T>);
 impl<T> WeightToFeePolynomial for ConstantFee<T>
 where
-	T: BaseArithmetic + From<u32> + Copy + Unsigned,
+	T: BaseArithmetic + From<u32> + Copy + Unsigned + From<u64>,
 {
 	type Balance = T;
 
 	fn polynomial() -> WeightToFeeCoefficients<Self::Balance> {
 		smallvec!(WeightToFeeCoefficient {
-			coeff_integer: FIXED_GAS_FEE.into(),
+			coeff_integer: FIXED_GAS_FEE_IN_KORIES.into(),
 			coeff_frac: Perbill::zero(),
 			negative: false,
 			degree: 0,
 		})
 	}
 
-	fn calc(weight: &Weight) -> Self::Balance {
-		FIXED_GAS_FEE.into()
+	fn calc(_weight: &Weight) -> Self::Balance {
+		FIXED_GAS_FEE_IN_KORIES.into()
 	}
 }
 
