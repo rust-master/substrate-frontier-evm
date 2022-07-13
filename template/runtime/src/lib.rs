@@ -62,8 +62,17 @@ use pallet_transaction_payment::CurrencyAdapter;
 pub use sp_runtime::BuildStorage;
 pub use sp_runtime::{Perbill, Permill};
 
+use frame_support::weights::{
+	WeightToFeeCoefficient, WeightToFeeCoefficients, WeightToFeePolynomial,
+};
+use smallvec::smallvec;
+
+use sp_arithmetic::traits::{BaseArithmetic, Unsigned};
+
 mod precompiles;
 use precompiles::FrontierPrecompiles;
+
+use pallet_template;
 
 /// Type of block number.
 pub type BlockNumber = u32;
@@ -279,14 +288,38 @@ impl pallet_balances::Config for Runtime {
 	type WeightInfo = ();
 }
 
-parameter_types! {
-	pub const TransactionByteFee: Balance = 1;
+/// Fixed at 9 decimals
+pub const FIXED_GAS_FEE_IN_KORIES: u64 = 2_500_000_000;
+
+pub struct ConstantFee<T>(sp_std::marker::PhantomData<T>);
+impl<T> WeightToFeePolynomial for ConstantFee<T>
+where
+	T: BaseArithmetic + From<u32> + Copy + Unsigned + From<u64>,
+{
+	type Balance = T;
+
+	fn polynomial() -> WeightToFeeCoefficients<Self::Balance> {
+		smallvec!(WeightToFeeCoefficient {
+			coeff_integer: FIXED_GAS_FEE_IN_KORIES.into(),
+			coeff_frac: Perbill::zero(),
+			negative: false,
+			degree: 0,
+		})
+	}
+
+	fn calc(_weight: &Weight) -> Self::Balance {
+		FIXED_GAS_FEE_IN_KORIES.into()
+	}
 }
 
+parameter_types! {
+	pub const TransactionByteFee: Balance = 0;
+}
+// TODO non-evm transaction fees fixed at a base fee of 125,000,000, change this base fee
 impl pallet_transaction_payment::Config for Runtime {
 	type OnChargeTransaction = CurrencyAdapter<Balances, ()>;
-	type OperationalFeeMultiplier = ConstU8<5>;
-	type WeightToFee = IdentityFee<Balance>;
+	type OperationalFeeMultiplier = ConstU8<0>;
+	type WeightToFee = ConstantFee<Balance>;
 	type LengthToFee = ConstantMultiplier<Balance, TransactionByteFee>;
 	type FeeMultiplierUpdate = ();
 }
@@ -358,7 +391,7 @@ impl pallet_dynamic_fee::Config for Runtime {
 }
 
 frame_support::parameter_types! {
-	pub IsActive: bool = true;
+	pub IsActive: bool = false;
 	pub DefaultBaseFeePerGas: U256 = U256::from(1_000_000_000);
 }
 
@@ -389,6 +422,9 @@ impl pallet_hotfix_sufficients::Config for Runtime {
 	type WeightInfo = pallet_hotfix_sufficients::weights::SubstrateWeight<Runtime>;
 }
 
+impl pallet_template::Config for Runtime {
+	type Event = Event;
+}
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
 	pub enum Runtime where
@@ -409,6 +445,7 @@ construct_runtime!(
 		DynamicFee: pallet_dynamic_fee::{Pallet, Call, Storage, Config, Inherent},
 		BaseFee: pallet_base_fee::{Pallet, Call, Storage, Config<T>, Event},
 		HotfixSufficients: pallet_hotfix_sufficients::{Pallet, Call},
+		TemplateModule: pallet_template::{Pallet, Call, Storage, Event<T>},
 	}
 );
 
