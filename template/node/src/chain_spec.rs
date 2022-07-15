@@ -166,16 +166,14 @@ fn testnet_genesis(
 			accounts: {
 				let mut map = BTreeMap::new();
 				map.insert(
-					// H160 address of Alice dev account
-					// Derived from SS58 (42 prefix) address
-					// SS58: 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
-					// hex: 0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d
-					// Using the full hex key, truncating to the first 20 bytes (the first 40 hex chars)
-					H160::from_str("d43593c715fdd31c61141abd04a99fd6822c8558")
+					//Heath:
+					// Public Address: 0x931f3600a299fd9B24cEfB3BfF79388D19804BeA
+					// Private Key: 0x0d6dcaaef49272a5411896be8ad16c01c35d6f8c18873387b71fbc734759b0ab
+					H160::from_str("931f3600a299fd9B24cEfB3BfF79388D19804BeA")
 						.expect("internal H160 is valid; qed"),
 					fp_evm::GenesisAccount {
-						balance: U256::from_str("0xffffffffffffffffffffffffffffffff")
-							.expect("internal U256 is valid; qed"),
+						// Balance transfer will success when we use this in balance ->  U256::from(1u64 << 61)
+						balance: U256::from(u128::max_value()),
 						code: Default::default(),
 						nonce: Default::default(),
 						storage: Default::default(),
@@ -183,11 +181,13 @@ fn testnet_genesis(
 				);
 				map.insert(
 					// H160 address of CI test runner account
+					// Gerald:
+					// Public Address: 0x6Be02d1d3665660d22FF9624b7BE0551ee1Ac91b
+					// Private Key: 0x99b3c12287537e38c90a9219d4cb074a89a16e9cdb20bf85728ebd97c343e342
 					H160::from_str("6be02d1d3665660d22ff9624b7be0551ee1ac91b")
 						.expect("internal H160 is valid; qed"),
 					fp_evm::GenesisAccount {
-						balance: U256::from_str("0xffffffffffffffffffffffffffffffff")
-							.expect("internal U256 is valid; qed"),
+						balance: Default::default(),
 						code: Default::default(),
 						nonce: Default::default(),
 						storage: Default::default(),
